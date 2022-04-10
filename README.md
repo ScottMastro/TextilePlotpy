@@ -9,4 +9,4 @@ Haplotype application:
 https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0010207
 
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![Textile plot example](https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png "Textile plot example")
