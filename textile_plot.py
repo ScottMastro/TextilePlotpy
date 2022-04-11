@@ -1,3 +1,14 @@
+#------------------------------------------------------------------
+# Original source:
+#    Natsuhiko Kumasakaa, Ritei Shibata
+#    High-dimensional data visualisation: The textile plot
+#    https://doi.org/10.1016/j.csda.2007.11.016
+#    Computational Statistics and Data Analysis
+#
+# Python implementation:
+#    Scott Mastromatteo
+#------------------------------------------------------------------
+
 import numpy as np
 import pandas as pd
 import scipy
@@ -124,22 +135,17 @@ def _textile_transform_no_missing(Xj, qj, eigen_choice=1, a0=0):
     return(A, B, alpha, beta)
 
 def textile_transform(X, is_categorical=None, eigen_choice=1):
-    '''
-        Natsuhiko Kumasakaa, Ritei Shibata
-        "High-dimensional data visualisation: The textile plot"
-        https://doi.org/10.1016/j.csda.2007.11.016
-        Computational Statistics and Data Analysis
-        
-        Textile plot transformation
-    
-        X : [p x n numpy matrix] Use None for missing data. Note: uses faster method if no data is missing
-        is_categorical : [list] of length p. True if x[i] is categorical variable, False if quantitative.
-                        Use is_categorical=None if no variables are categorical.
-                        Use is_categorical="all" if ALL variables are categorical.
+    '''  
+    Textile plot transformation
 
-        eigen_choice: [int] eigenvector to use for transformation. Default=1 (largest eigenvalue). Must be <= p
-        
-        Returns p x n numpy matrix transformed data.
+    X : [p x n numpy matrix] Use None for missing data. Note: uses faster method if no data is missing
+    is_categorical : [list] of length p. True if x[i] is categorical variable, False if quantitative.
+                    Use is_categorical=None if no variables are categorical.
+                    Use is_categorical="all" if ALL variables are categorical.
+
+    eigen_choice: [int] eigenvector to use for transformation. Default=1 (largest eigenvalue). Must be <= p
+    
+    Returns p x n numpy matrix transformed data.
     '''
     
     Xj=[]; wj=[] ; qj=[] ; j=0
