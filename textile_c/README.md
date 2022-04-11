@@ -15,7 +15,7 @@ To compile
 
 `gcc transform.c -lblas -llapack`
 
-Expected output
+Expected output (Note: column 2,3,4 correspond to the input variables)
 
 | 0.04888  | 0.08233  | 0.18339  | -0.11907 |
 |----------|----------|----------|----------|
