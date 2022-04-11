@@ -13,7 +13,7 @@ sudo apt install liblapack-dev
 ```
 To compile
 
-`gcc transform.c -lblas -llapack`
+`gcc transform.c -llapack`
 
 Expected output (Note: column 2,3,4 correspond to the input variables)
 
