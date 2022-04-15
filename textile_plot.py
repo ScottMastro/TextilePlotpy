@@ -134,17 +134,23 @@ def _textile_transform_no_missing(Xj, qj, eigen_choice=1, a0=0):
 
     return(A, B, alpha, beta)
 
-def textile_transform(X, is_categorical=None, eigen_choice=1):
+def textile_transform(X, is_categorical=None, eigen_choice=1, category_options=dict(), get_location_scale=False):
     '''  
     Textile plot transformation
 
     X : [p x n numpy matrix] Use None for missing data. Note: uses faster method if no data is missing
+    
     is_categorical : [list] of length p. True if x[i] is categorical variable, False if quantitative.
                     Use is_categorical=None if no variables are categorical.
                     Use is_categorical="all" if ALL variables are categorical.
-
+    
+    category_options: [dict[int]:list] Key=variable index, value=all categorical classes available to that variable.
+                      If category options are not provided, the categories are inferred and placed in sorted order.
+    
     eigen_choice: [int] eigenvector to use for transformation. Default=1 (largest eigenvalue). Must be <= p
     
+    get_location_scale: [boolean] If true, returns the location and scale vectors as a tuple along with the transformed matrix.
+                        Intended for internal use for genetic application to calculate height for each allele.
     Returns p x n numpy matrix transformed data.
     '''
     
@@ -157,25 +163,38 @@ def textile_transform(X, is_categorical=None, eigen_choice=1):
     if is_categorical == "all":
         is_categorical = [True for x_ in x]
 
-    
-    p=len(x) ; n=len(x[0]) 
+    p=len(x) ; n=len(x[0])
 
     def is_none(item):
         return item is None or np.isnan(item) or str(item) == "NA"
+    def most_frequent(itr):
+        lst = [x for x in itr if not is_none(x)]
+        return max(set(lst), key = lst.count)
     
     for xi, cat in zip(x, is_categorical):
         wi = np.array([0 if is_none(x_) else 1 for x_ in xi])
-        xi=[0 if w_ == 0 else x_ for w_,x_ in zip(wi,xi)]
         wj.append(wi)
-        if cat: 
-            Z = pd.get_dummies(xi).to_numpy()
-            C=pd.get_dummies(list(set(xi))).to_numpy()[:,1:]
-            #C=np.array([0,0,1,0,1,1]).reshape(3,2)
+        if cat:
+            common = most_frequent(xi)
+            xi=[common if w_ == 0 else x_ for w_,x_ in zip(wi,xi)]
+            
+            if j in category_options:
+                cats = category_options[j]
+            else:
+                cats = sorted(list(dict.fromkeys(xi)))
+            
+            cat_dict = {cat_: l for l,cat_ in enumerate(cats)}
+            Z = np.zeros((len(xi), len(cats)))
+            for k,x_ in enumerate(xi):
+                Z[k][cat_dict[x_]] = 1
+                
+            C=pd.get_dummies(cats, drop_first=True).to_numpy()
             X_=Z.dot(C)
             Xj.append(X_)
             for col in range(X_.shape[1]):
                 qj.append(j)
-        else: 
+        else:
+            xi=[0 if w_ == 0 else x_ for w_,x_ in zip(wi,xi)]
             Xj.append(np.array(xi).reshape(len(x[0]),1))
             qj.append(j)
         j+=1
@@ -205,6 +224,9 @@ def textile_transform(X, is_categorical=None, eigen_choice=1):
     #print("alpha:\n", alpha.round(4))
     #print("beta:\n", beta.round(4)) 
     #print("Y:\n", Y.round(4))
+    if get_location_scale:
+        return(Y, alpha, beta)
+    
     return Y
 
 def get_example_data():
@@ -285,3 +307,66 @@ def get_iris_data():
     x = np.stack(x).transpose()
     is_categorical=[True,False,False,False,False]
     return (labels, x, is_categorical)
+
+def get_1kgenome_data():
+    ''' Example genetic dataset using 1000Genomes data chr1:1471000-1481000. Requires PyVCF. '''
+    import vcf
+
+    VCF="data/1kgenomes_chr1_1471000_1481000.vcf"
+    vcf_reader = vcf.Reader(filename=VCF)
+    vcf_records = [record for record in vcf_reader]
+    return vcf_records
+
+def genotype_textile(vcf_records, haplotype=False, set_missing_to_ref=False):
+    '''  
+    Textile plot transformation for genetic data
+
+    vcf_records : [list] A list of p VCF records (generated from PyVCF) to transform.
+    haplotype : [boolean] Whether to transform genotype (GT) or phased haplotypes (uses PS if available) from records
+                Defaults to genotype.
+    set_missing_to_ref: [boolean] Set all GT values with missing data to 0/0.
+    Returns a list of length p corresponding to y-position of each variant in textile plot.
+    '''
+    
+    gt_matrix=[]
+    for record in vcf_records:
+        if len(record.alleles) != 2:
+            raise ValueError("Only bialleleic variants are allowed when haplotype=False : " + str(record))        
+        samples=[]
+        for sample in record.samples:
+            gt=sample.gt_alleles
+            if None in gt: 
+                if set_missing_to_ref:
+                    samples.append(0)
+                else:
+                    samples.append(None) 
+                continue
+            samples.append(int(gt[0]) + int(gt[1]))
+
+        if not set_missing_to_ref and len([x for x in samples if x is not None]) < 1:
+            raise ValueError("All data for variant is missing: " + str(record))        
+        gt_matrix.append(samples)
+        
+    M = np.stack(gt_matrix, axis=1)
+    options = dict()
+    for j in range(M.shape[1]):
+        options[j] = [0,1,2]
+    Y, alpha, beta = textile_transform(M, is_categorical="all", category_options=options, get_location_scale=True)
+    
+    y=[]
+    k=0
+    for j in range(M.shape[1]):
+        y.append( {options[j][0] : alpha[j]} )
+        for cat in options[j][1:]:
+            y[j][cat] = alpha[j] + beta[k]
+            k+=1
+            
+                    
+
+    for record in vcf_records:
+        for sample in record.samples:
+            gt=sample.gt_alleles
+
+
+
+
