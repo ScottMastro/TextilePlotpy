@@ -7,8 +7,6 @@ Original paper:\
 Genetic application:\
 [Kumasaka, Natsuhiko; Nakamura, Yusuke and Kamatani, Naoyuki. **The Textile Plot: A New Linkage Disequilibrium Display of Multiple-Single Nucleotide Polymorphism Genotype Data**. 2010. _PLOS ONE_.](https://doi.org/10.1371/journal.pone.0010207)
 
-<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png" width="500px">
-
 # How to use
 The implementation depends on whether data is missing or not (no missing = faster).
 
@@ -42,5 +40,8 @@ vcf_records=get_1kgenome_data()
 plt.figure(figsize=(18,9))
 genotype_textile(vcf_records, plot=True, haplotype=False, set_missing_to_ref=True)
 ```
-A haplotype plot can also be generated using `haplotype=True`:
+<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png" width="500px">
 
+- A haplotype plot can also be generated using `haplotype=True`:
+
+<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png" width="500px">
