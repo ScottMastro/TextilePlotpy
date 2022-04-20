@@ -4,7 +4,7 @@ Textile plot python implementation. Original C file can be found under `textile_
 Original paper:\
 [Kumasaka, Natsuhiko and Shibata, Ritei. **High-Dimensional Data Visualisation: The Textile Plot**. 2008. _Comput. Stat. Data Anal._](https://doi.org/10.1016/j.csda.2007.11.016)
 
-Haplotype application:\
+Genetic application:\
 [Kumasaka, Natsuhiko; Nakamura, Yusuke and Kamatani, Naoyuki. **The Textile Plot: A New Linkage Disequilibrium Display of Multiple-Single Nucleotide Polymorphism Genotype Data**. 2010. _PLOS ONE_.](https://doi.org/10.1371/journal.pone.0010207)
 
 <img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png" width="500px">
@@ -31,3 +31,16 @@ This implementation produces the same location (α) and scale (β) parameters fo
 α=[−41.22766, −190.56643, 106.09412, −65.95838, −47.63126]
 β=[50.57710, 73.10587, 32.61262, −34.70152, 17.55146, 39.71478]
 ```
+
+# Genetic application
+A framework for variant-based textile plots is included in this script. To run an example:
+
+- Generate a genotype plot using 1000Genomes data:
+```
+import matplotlib.pyplot as plt
+vcf_records=get_1kgenome_data()
+plt.figure(figsize=(18,9))
+genotype_textile(vcf_records, plot=True, haplotype=False, set_missing_to_ref=True)
+```
+A haplotype plot can also be generated using `haplotype=True`:
+
