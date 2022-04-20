@@ -40,8 +40,8 @@ vcf_records=get_1kgenome_data()
 plt.figure(figsize=(18,9))
 genotype_textile(vcf_records, plot=True, haplotype=False, set_missing_to_ref=True)
 ```
-<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png" width="500px">
+<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/img/genotypes.png" width="500px">
 
 - A haplotype plot can also be generated using `haplotype=True`:
 
-<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/haps.png" width="500px">
+<img src="https://raw.githubusercontent.com/ScottMastro/TextilePlotpy/main/img/haplotypes.png" width="500px">
